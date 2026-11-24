@@ -4,14 +4,16 @@ int menuChoice = 0;
 string password = string.Empty;
 string hash = string.Empty;
 byte[] salt = Array.Empty<byte>();
+string divider = "-------------------------------------------------------------";
 
 while (menuChoice != 5)
 {
+    Console.WriteLine("######################################");
     Console.WriteLine("Password Hashing Example");
     Console.WriteLine("1. Hash a password - No Salt");
-    Console.WriteLine("2. Verify a password - Not Salt");
-    Console.WriteLine("3. Hash a password");
-    Console.WriteLine("4. Verify a password");
+    Console.WriteLine("2. Verify a password - No Salt");
+    Console.WriteLine("3. Hash a password - With a Salt");
+    Console.WriteLine("4. Verify a password - With a Salt");
     Console.WriteLine("5. Exit");
     Console.Write("Enter your choice: ");
     
@@ -43,9 +45,9 @@ while (menuChoice != 5)
 
 void HashPassword()
 {
-
+    Console.WriteLine(divider);
     Console.WriteLine("Password Hashing Example Using PBKDF2 and a Salt");
-    Console.WriteLine("Enter a password to hash:");
+    Console.Write("Enter a password to hash: ");
     bool validPassword = false;
 
 
@@ -66,53 +68,64 @@ void HashPassword()
     // Using a salt is important to protect against rainbow table attacks and
     // ensure that the same password does not always produce the same hash.
     salt = RandomNumberGenerator.GetBytes(16);
+    Console.WriteLine("A salt is used to ensure that passwords that are the same do not produced the same hash");
+    
+    Console.WriteLine(divider);
     Console.WriteLine($"Generated Salt: {Convert.ToBase64String(salt)}");
+    Console.WriteLine(divider);
 
     // Hash the password with the salt
-    hash = Convert.ToBase64String(
-        Rfc2898DeriveBytes.Pbkdf2(
-            password,
-            salt,
-            100000,
-            HashAlgorithmName.SHA256,
-            32));
+    hash = hashPassword(salt, password);
 
+    Console.WriteLine(divider);
     Console.WriteLine($"Generated Hash: {hash}");
+    Console.WriteLine(divider);
 }
 
-
+string hashPassword(byte[] hashSalt, string hashPassword)
+{
+    string createdHash = Convert.ToBase64String(
+       Rfc2898DeriveBytes.Pbkdf2(
+           hashPassword,
+           hashSalt,    
+           100000, // Simply rehashes the has 100,000 times.
+           HashAlgorithmName.SHA256,
+           32));
+    return createdHash;
+}
 void VerifyPassword()
 {
+    Console.WriteLine(divider);
     if (string.IsNullOrEmpty(hash) || salt.Length == 0)
     {
         Console.WriteLine("No password has been hashed yet. Please hash a password first.");
         return;
     }
-    Console.WriteLine("Enter the password again to verify:");
+
+    Console.Write("Enter the password again to verify: ");
     string passwordToVerify = Console.ReadLine();
 
-    string hashToVerify = Convert.ToBase64String(
-        Rfc2898DeriveBytes.Pbkdf2(
-            passwordToVerify,
-            salt,
-            100000,
-            HashAlgorithmName.SHA256,
-            32));
+    string hashToVerify = hashPassword(salt, passwordToVerify);
 
     if (hashToVerify == hash)
     {
+        Console.WriteLine(divider);
         Console.WriteLine("Password is correct!");
+        Console.WriteLine(divider);
     }
     else
     {
+        Console.WriteLine(divider);
         Console.WriteLine("Password is incorrect.");
+        Console.WriteLine(divider);
     }
 }
 
 void HashPasswordNoSalt()
 {
+    Console.WriteLine(divider);
     Console.WriteLine("Password Hashing Example Without Salt");
-    Console.WriteLine("Enter a password to hash:");
+    Console.Write("Enter a password to hash: ");
     bool validPassword = false;
     while (!validPassword)
     {
@@ -127,38 +140,36 @@ void HashPasswordNoSalt()
         }
     }
     // Hash the password without a salt
-    hash = Convert.ToBase64String(
-        Rfc2898DeriveBytes.Pbkdf2(
-            password,
-            Array.Empty<byte>(), // No salt
-            100000,
-            HashAlgorithmName.SHA256,
-            32));
+    hash = hashPassword(Array.Empty<byte>(), password);
+    
+    Console.WriteLine(divider);
     Console.WriteLine($"Generated Hash: {hash}");
+    Console.WriteLine(divider);
 }
 
 void VerifyPasswordNoSalt()
 {
+    Console.WriteLine(divider);
     if (string.IsNullOrEmpty(hash))
     {
         Console.WriteLine("No password has been hashed yet. Please hash a password first.");
         return;
     }
-    Console.WriteLine("Enter the password again to verify:");
+    Console.Write("Enter the password again to verify: ");
     string passwordToVerify = Console.ReadLine();
-    string hashToVerify = Convert.ToBase64String(
-        Rfc2898DeriveBytes.Pbkdf2(
-            passwordToVerify,
-            Array.Empty<byte>(), // No salt
-            100000,
-            HashAlgorithmName.SHA256,
-            32));
+
+    string hashToVerify = hashPassword(Array.Empty<byte>(), passwordToVerify);
+
     if (hashToVerify == hash)
     {
+        Console.WriteLine(divider);
         Console.WriteLine("Password is correct!");
+        Console.WriteLine(divider);
     }
     else
     {
+        Console.WriteLine(divider);
         Console.WriteLine("Password is incorrect.");
+        Console.WriteLine(divider);
     }
 }
