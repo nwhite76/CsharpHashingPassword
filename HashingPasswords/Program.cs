@@ -50,13 +50,12 @@ void HashPassword()
     Console.Write("Enter a password to hash: ");
     bool validPassword = false;
 
-
     while (!validPassword)
     {
         password = Console.ReadLine();
         if (string.IsNullOrWhiteSpace(password))
         {
-            Console.WriteLine("Password cannot be empty. Please enter a valid password:");
+            Console.Write("Password cannot be empty. Please enter a valid password: ");
         }
         else
         {
@@ -98,12 +97,27 @@ void VerifyPassword()
     Console.WriteLine(divider);
     if (string.IsNullOrEmpty(hash) || salt.Length == 0)
     {
-        Console.WriteLine("No password has been hashed yet. Please hash a password first.");
+        Console.WriteLine("No password with a salt has been hashed yet. Please hash a password using a salt first.");
         return;
     }
 
     Console.Write("Enter the password again to verify: ");
-    string passwordToVerify = Console.ReadLine();
+    string passwordToVerify = string.Empty;
+
+    bool validPassword = false;
+
+    while (!validPassword)
+    {
+        passwordToVerify = Console.ReadLine();
+        if (string.IsNullOrWhiteSpace(passwordToVerify))
+        {
+            Console.WriteLine("Password cannot be empty. Please enter a valid password:");
+        }
+        else
+        {
+            validPassword = true;
+        }
+    }
 
     string hashToVerify = hashPassword(salt, passwordToVerify);
 
@@ -132,7 +146,7 @@ void HashPasswordNoSalt()
         password = Console.ReadLine();
         if (string.IsNullOrWhiteSpace(password))
         {
-            Console.WriteLine("Password cannot be empty. Please enter a valid password:");
+            Console.Write("Password cannot be empty. Please enter a valid password: ");
         }
         else
         {
@@ -156,7 +170,22 @@ void VerifyPasswordNoSalt()
         return;
     }
     Console.Write("Enter the password again to verify: ");
-    string passwordToVerify = Console.ReadLine();
+    string passwordToVerify = string.Empty;
+
+    bool validPassword = false;
+
+    while (!validPassword)
+    {
+        passwordToVerify = Console.ReadLine();
+        if (string.IsNullOrWhiteSpace(passwordToVerify))
+        {
+            Console.Write("Password cannot be empty. Please enter a valid password: ");
+        }
+        else
+        {
+            validPassword = true;
+        }
+    }
 
     string hashToVerify = hashPassword(Array.Empty<byte>(), passwordToVerify);
 
